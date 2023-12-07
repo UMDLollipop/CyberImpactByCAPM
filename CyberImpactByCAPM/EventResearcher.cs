@@ -111,11 +111,11 @@ namespace CyberImpactByCAPM
                             {
                                 // The first business day the event started. If the event started when the market is closed, the next business date is used.
                                 int eventStartIndex = history.Quotes.ToList().FindIndex(quotes => quotes.Period.Date >= @event.event_date.Date);
-                                int modelStartIndex = eventStartIndex - _estimationPeriods;
+                                int modelStartIndex = eventStartIndex - _estimationPeriods - 1;
                                 List<FyQuote> modelQuotes = new();
-                                modelQuotes.AddRange(history.Quotes.ToList().GetRange(modelStartIndex, _estimationPeriods));
+                                modelQuotes.AddRange(history.Quotes.ToList().GetRange(modelStartIndex, _estimationPeriods + 1));
                                 List<FyQuote> eventQuotes = new();
-                                eventQuotes.AddRange(history.Quotes.ToList().GetRange(eventStartIndex, _eventPeriods));
+                                eventQuotes.AddRange(history.Quotes.ToList().GetRange(eventStartIndex - 1, _eventPeriods + 1));
                                 List<FinancialStats> modelFinStats = new();
                                 foreach (FyQuote fyQuote in modelQuotes)
                                 {
@@ -161,7 +161,7 @@ namespace CyberImpactByCAPM
             // CAPM
             foreach (var capm in CapitalAssetPricingModelList)
             {
-                double[] xValues = capm.ModelXValue ?? Array.Empty<double>();
+                double[] xValues = capm.ModelXValue?[1..] ?? Array.Empty<double>();
                 double[] yValues = capm.ModelYValue ?? Array.Empty<double>();
                 var matrixX = DenseMatrix.OfColumnVectors(Vector<double>.Build.DenseOfArray(xValues), Vector<double>.Build.Dense(xValues.Length, 1));
 
@@ -174,9 +174,9 @@ namespace CyberImpactByCAPM
             // Fama–French three-factor model
             foreach (var capm in CapitalAssetPricingModelList)
             {
-                double[] x1Values = capm.ModelXValue ?? Array.Empty<double>();
-                double[] x2Values = capm.ModelFinancialStats?.Select(x => x.SMB).ToArray() ?? Array.Empty<double>();
-                double[] x3Values = capm.ModelFinancialStats?.Select(x => x.HML).ToArray() ?? Array.Empty<double>();
+                double[] x1Values = capm.ModelXValue?[1..] ?? Array.Empty<double>();
+                double[] x2Values = capm.ModelFinancialStats?[1..]?.Select(x => x.SMB).ToArray() ?? Array.Empty<double>();
+                double[] x3Values = capm.ModelFinancialStats?[1..]?.Select(x => x.HML).ToArray() ?? Array.Empty<double>();
                 double[] yValues = capm.ModelYValue ?? Array.Empty<double>();
                 var matrixX = DenseMatrix.OfColumnVectors(
                     Vector<double>.Build.DenseOfArray(x1Values),
