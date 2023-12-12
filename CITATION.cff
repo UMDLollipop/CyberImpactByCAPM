@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it using these metadata.
+title: Cyber impacts on firms' financial performance using the Capital Assets Pricing Model
+abstract: This is my awesome research software. It does many things.
+authors:
+  - family-names: Fang
+    given-names: Kevin
+version: 0.0.1
+date-released: "2023-12-11"
+repository-code: "https://github.com/UMDLollipop/CyberImpactByCAPM"
